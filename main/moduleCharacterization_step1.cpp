@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
   TChain* tree = new TChain("data","data");
 
-  
+  std::cout << "CIAOOOOOOOOOOOOOOOOO" << std::endl;
   std::stringstream ss(runs); 
   std::string token;
   while( std::getline(ss,token,',') )
@@ -198,15 +198,19 @@ int main(int argc, char** argv)
 	if(!opts.GetOpt<std::string>("Input.vth").compare("vth2"))  { vth = vth2;}
         
 
-	if (channelIdx[chL_ext] <0 || channelIdx[chR_ext] <0) continue;
+	if (channelIdx[chL_ext] <0 || channelIdx[chR_ext] <0) continue;  
 	
 	qfineL_ext = (*qfine)[channelIdx[chL_ext]];
 	qfineR_ext = (*qfine)[channelIdx[chR_ext]];
 	energyL_ext = (*energy)[channelIdx[chL_ext]];
 	energyR_ext = (*energy)[channelIdx[chR_ext]];
 	
-	if (qfineL_ext < qfineMin) continue;
-	if (qfineR_ext < qfineMin) continue;      
+	if (qfineL_ext < qfineMin){
+    continue;
+  }
+	if (qfineR_ext < qfineMin){
+    continue;
+  }      
 	
 	int index( (10000*int(Vov*100.)) + (100*vth) + 99 );
 	
@@ -292,7 +296,6 @@ int main(int argc, char** argv)
 	std::cout << "\n>>> 1st loop: reading entry " << entry << " / " << nEntries << " (" << 100.*entry/nEntries << "%)" << std::endl;
 	TrackProcess(cpu, mem, vsz, rss);
       }
-    
     float Vov = step1;
     float vth1 = float(int(step2/10000)-1);
     float vth2 = int((step2-10000*(vth1+1))/100.)-1;
@@ -304,7 +307,9 @@ int main(int argc, char** argv)
     // --- check coincidence with another channel 
     if(!opts.GetOpt<std::string>("Coincidence.status").compare("yes")){
 
-      if(!acceptEvent[entry] ) continue;
+      if(!acceptEvent[entry] ){
+        continue;
+      }
       
       int chL_ext = opts.GetOpt<int>("Coincidence.chL");
       int chR_ext = opts.GetOpt<int>("Coincidence.chR");
@@ -315,15 +320,14 @@ int main(int argc, char** argv)
       int eBin = opts.GetOpt<int>("Coincidence.peak511eBin");
       float avEn = 0.5 * ( energyL_ext + energyR_ext);
       if ( (!opts.GetOpt<std::string>("Input.sourceName").compare("Na22SingleBar") || !opts.GetOpt<std::string>("Input.sourceName").compare("Na22")) &&  avEn > rangesLR[label]-> at(eBin)) {
-	continue;
+  continue;
       }
       
       if ( (!opts.GetOpt<std::string>("Input.sourceName").compare("TB")) && avEn < rangesLR[label]-> at(0)) {
-	continue;
+  continue;
       }
     }
-    
-    
+        
     
     for(int iBar = 0; iBar < 16; ++iBar) {
       
@@ -375,7 +379,6 @@ int main(int argc, char** argv)
       //--- create histograms, if needed
       if( h1_totL[index] == NULL )
 	{
-	  
 	  h1_qfineL[index] = new TH1F(Form("h1_qfine_bar%02dL_Vov%.1f_th%02.0f",iBar,Vov,vth),"",512,-0.5,511.5);
 	  h1_qfineR[index] = new TH1F(Form("h1_qfine_bar%02dR_Vov%.1f_th%02.0f",iBar,Vov,vth),"",512,-0.5,511.5);
 	  
@@ -395,9 +398,15 @@ int main(int argc, char** argv)
       if (!opts.GetOpt<std::string>("Input.sourceName").compare("Co60") || !opts.GetOpt<std::string>("Input.sourceName").compare("Co60SumPeak") || !opts.GetOpt<std::string>("Input.sourceName").compare("TB")) 
 	{
 	  
-	  if( totL[iBar] <= 0. || totR[iBar] <= 0. ) continue;
-	  if( totL[iBar] >= 100. ||  totR[iBar] >= 100.) continue;
-	  if( qfineL[iBar] < qfineMin || qfineR[iBar] < qfineMin ) continue;
+	  if( totL[iBar] <= 0. || totR[iBar] <= 0. ){
+      continue;
+    } 
+	  if( totL[iBar] >= 100. ||  totR[iBar] >= 100.){
+      continue;
+    }
+	  if( qfineL[iBar] < qfineMin || qfineR[iBar] < qfineMin ){
+      continue;
+    }
 	  
 	  h1_qfineL[index] -> Fill( qfineL[iBar] );
 	  h1_totL[index] -> Fill( totL[iBar]  );
